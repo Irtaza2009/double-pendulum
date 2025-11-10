@@ -116,6 +116,7 @@ h1 {
     font-weight: 500;
     opacity: 0.8;
     line-height: 1.2;
+    margin-top: 0.5rem;
 }
 
 .collapse-btn {
