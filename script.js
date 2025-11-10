@@ -340,11 +340,11 @@ function loop() {
     updatePhysics(0.016);
     drawPendulum();
     
-    if (state.dampingEnabled) {
+    //if (state.dampingEnabled) {
         const energy = calculateEnergy();
         energyValue.textContent = `${energy.toFixed(2)} J`;
         energyValueInline.textContent = `${energy.toFixed(2)} J`;
-    }
+    //}
     
     requestAnimationFrame(loop);
 }
@@ -434,7 +434,7 @@ dampingToggle.addEventListener('change', (e) => {
         headerStats.style.display = 'flex';
     } else {
         dampingControls.style.display = 'none';
-        headerStats.style.display = 'none';
+        headerStats.style.display = 'flex';
         state.damping = 0;
         sliders.damping.value = 0;
         vals.damping.textContent = '0.000';

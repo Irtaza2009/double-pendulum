@@ -16,6 +16,7 @@
             <p>And you can <strong>drag and drop</strong> the pendulum anywhere when in the <strong>off</strong> mode!</p>
             <p>Try it out in the <strong>Cursor Interaction</strong> section at the top of the settings panel!</p>
             <p>And you can turn on <strong>damping</strong> by scrolling down in the settings panel and adjust <strong>air resistance</strong> to see its effect on the pendulum's motion!</p>
+            <p>And you can see real-time energy changes!</p>
             <button class="popup-btn" id="closePopup">Start!</button>
         </div>
     </div>
@@ -25,7 +26,7 @@
             <div class="header">
                 <div class="header-content">
                     <h1>Double Pendulum</h1>
-                    <div class="header-stats" id="headerStats" style="display: none;">
+                    <div class="header-stats" id="headerStats">
                         <div class="energy-display">
                             <span class="energy-label">Energy:</span>
                             <span class="energy-value" id="energyValue">0.00 J</span>
@@ -134,7 +135,7 @@
                                     <span class="energy-value" id="energyValueInline">0.00 J</span>
                                 </div>
                                 <div class="energy-description">
-                                    Energy decreases due to air resistance
+                                    Total mechanical energy (kinetic + potential)
                                 </div>
                             </div>
                         </div>
