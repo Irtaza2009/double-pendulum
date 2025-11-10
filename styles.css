@@ -1,0 +1,61 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #120F19;
+    font-family: 'Inter', sans-serif;
+    color: #cad5db;
+    overflow: hidden;
+}
+
+h1 {
+    font-weight: 600;
+    color: #e5cab7;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.ui {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(220, 184, 176, 0.07);
+    backdrop-filter: blur(8px);
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(187, 184, 187, 0.2);
+}
+
+.controls {
+    display: block;
+    font-size: 0.9rem;
+    margin-top: 0.6rem;
+    color: #9bb0cd;
+}
+
+input[type="range"] {
+    width: 150px;
+    accent-color: #dcb8b0;
+}
+
+
+button {
+    margin-top: 1rem;
+    padding: 0.4rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #dcb8b0;
+    color: #120F19;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #e5cab7;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}

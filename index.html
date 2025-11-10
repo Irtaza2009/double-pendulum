@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Double Pendulum</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ui">
+        <h1>Double Pendulum</h1>
+        <div class="controls">
+            <label>Gravity: <span id="gVal">9.8</span></label>
+            <input type="range" id="gravity" min="0" max="20" step="0.1" value="9.8">
+            <label>Rod 1 Length: <span id="l1Val">1</span></label>
+            <input type="range" id="l1" min="0.5" max="2" step="0.01" value="1">
+
+            <label>Rod 2 Length: <span id="l2Val">1</span></label>
+            <input type="range" id="l2" min="0.5" max="2" step="0.01" value="1">
+
+            <label>Mass 1: <span id="m1Val">1</span></label>
+            <input type="range" id="m1" min="0.5" max="2" step="0.1" value="1">
+
+            <label>Mass 2: <span id="m2Val">1</span></label>
+            <input type="range" id="m2" min="0.5" max="2" step="0.1" value="1">
+
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <script src="script.js"></script>
+</body>
+
+</html>
