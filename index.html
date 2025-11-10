@@ -8,6 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Welcome Popup -->
+    <div class="welcome-popup" id="welcomePopup">
+        <div class="popup-content">
+            <h2>Double Pendulum</h2>
+            <p>You can turn your cursor into a concrete or rubber block, and interact with the pendulum!</p>
+            
+            <p>Try it out in the <strong>Cursor Interaction</strong> section at the top of the settings panel!</p>
+            <button class="popup-btn" id="closePopup">Start!</button>
+        </div>
+    </div>
+
     <div class="ui-container">
         <div class="ui">
             <div class="header">
@@ -30,6 +41,29 @@
             
             <div class="content" id="content">
                 <div class="control-groups">
+                    <!-- CURSOR INTERACTION AT THE TOP -->
+                    <div class="control-group">
+                        <h3>Cursor Interaction</h3>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Cursor Block</span>
+                                <span class="value" id="cursorModeVal">Off</span>
+                            </label>
+                            <div class="cursor-mode-buttons">
+                                <button class="cursor-btn" id="cursorOff">Off</button>
+                                <button class="cursor-btn" id="cursorConcrete">Concrete</button>
+                                <button class="cursor-btn" id="cursorRubber">Rubber</button>
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Block Size</span>
+                                <span class="value" id="blockSizeVal">40</span>
+                            </label>
+                            <input type="range" id="blockSize" min="20" max="100" step="5" value="40">
+                        </div>
+                    </div>
+
                     <div class="control-group">
                         <h3>Environment</h3>
                         <div class="control-item">
