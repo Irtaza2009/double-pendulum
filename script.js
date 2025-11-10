@@ -1,3 +1,5 @@
+// script.js
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -39,6 +41,12 @@ let cursorBlock = {
 
 let mouseX = 0;
 let mouseY = 0;
+
+// New variables for drag and drop
+let isDragging = false;
+let draggedMass = null; // 'mass1' or 'mass2'
+let dragStartX = 0;
+let dragStartY = 0;
 
 function calculateEnergy() {
     const { g, l1, l2, m1, m2, a1, a2, a1_v, a2_v } = state;
@@ -124,7 +132,56 @@ function handleCollisionResponse(velocity, collisionAngle, material) {
     return newVelocity;
 }
 
+// function to handle dragging physics
+function handleDragPhysics() {
+    if (!isDragging || !draggedMass) return;
+    
+    const originX = canvas.width / 1.75;
+    const originY = canvas.height / 3;
+    
+    if (draggedMass === 'mass1') {
+        // Calculate angle from origin to mouse position for mass1
+        const dx = mouseX - originX;
+        const dy = mouseY - originY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Limit distance to rod length
+        const limitedDistance = Math.min(distance, state.l1 * scale);
+        
+        // Calculate new angle
+        state.a1 = Math.atan2(dx, dy);
+        
+        // Reset velocity when dragging
+        state.a1_v = 0;
+        state.a2_v = 0;
+    } else if (draggedMass === 'mass2') {
+        // Calculate position of mass1
+        const p1x = originX + (state.l1 * scale) * Math.sin(state.a1);
+        const p1y = originY + (state.l1 * scale) * Math.cos(state.a1);
+        
+        // Calculate angle from mass1 to mouse position for mass2
+        const dx = mouseX - p1x;
+        const dy = mouseY - p1y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Limit distance to rod length
+        const limitedDistance = Math.min(distance, state.l2 * scale);
+        
+        // Calculate new angle
+        state.a2 = Math.atan2(dx, dy);
+        
+        // Reset velocity when dragging
+        state.a2_v = 0;
+    }
+}
+
 function updatePhysics(dt) {
+    // If dragging, handle drag physics instead of normal physics
+    if (isDragging) {
+        handleDragPhysics();
+        return;
+    }
+    
     const { g, l1, l2, m1, m2, a1, a2, a1_v, a2_v, damping, dampingEnabled } = state;
     
     const originX = canvas.width / 1.75;
@@ -228,8 +285,11 @@ function drawPendulum() {
     const p2x = p1x + (state.l2 * scale) * Math.sin(state.a2);
     const p2y = p1y + (state.l2 * scale) * Math.cos(state.a2);
 
-    trailPoints.push({ x: p2x, y: p2y });
-    if (trailPoints.length > maxTrailLength) trailPoints.shift();
+    // Only add trail points when not dragging
+    if (!isDragging) {
+        trailPoints.push({ x: p2x, y: p2y });
+        if (trailPoints.length > maxTrailLength) trailPoints.shift();
+    }
 
     for (let i = 1; i < trailPoints.length; i++) {
         const alpha = (i / trailPoints.length) * 0.6;
@@ -256,12 +316,14 @@ function drawPendulum() {
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
 
-    ctx.fillStyle = getColorIntensity(state.m1, '#e5cab7');
+    // Draw mass1 with highlight if being dragged
+    ctx.fillStyle = isDragging && draggedMass === 'mass1' ? '#ffeb3b' : getColorIntensity(state.m1, '#e5cab7');
     ctx.beginPath();
     ctx.arc(p1x, p1y, state.m1 * 15, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = getColorIntensity(state.m2, '#9bb0cd');
+    // Draw mass2 with highlight if being dragged
+    ctx.fillStyle = isDragging && draggedMass === 'mass2' ? '#ffeb3b' : getColorIntensity(state.m2, '#9bb0cd');
     ctx.beginPath();
     ctx.arc(p2x, p2y, state.m2 * 15, 0, Math.PI * 2);
     ctx.fill();
@@ -333,6 +395,8 @@ function resetPendulum() {
     state.a1_v = 0;
     state.a2_v = 0;
     trailPoints.length = 0;
+    isDragging = false;
+    draggedMass = null;
 }
 
 for (let key in sliders) {
@@ -390,16 +454,77 @@ function setCursorMode(mode) {
     vals.cursorMode.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
 }
 
-document.getElementById('cursorOff').addEventListener('click', () => setCursorMode('off'));
-document.getElementById('cursorConcrete').addEventListener('click', () => setCursorMode('concrete'));
-document.getElementById('cursorRubber').addEventListener('click', () => setCursorMode('rubber'));
+// New function to check if mouse is over a mass
+function isMouseOverMass(mouseX, mouseY, massX, massY, radius) {
+    const dx = mouseX - massX;
+    const dy = mouseY - massY;
+    return Math.sqrt(dx * dx + dy * dy) <= radius;
+}
+
+// Mouse event handlers for drag and drop
+canvas.addEventListener('mousedown', (e) => {
+    // Only allow dragging when cursor mode is 'off'
+    if (cursorBlock.material !== 'off') return;
+    
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    const originX = canvas.width / 1.75;
+    const originY = canvas.height / 3;
+    const p1x = originX + (state.l1 * scale) * Math.sin(state.a1);
+    const p1y = originY + (state.l1 * scale) * Math.cos(state.a1);
+    const p2x = p1x + (state.l2 * scale) * Math.sin(state.a2);
+    const p2y = p1y + (state.l2 * scale) * Math.cos(state.a2);
+    
+    // Check if mouse is over mass1
+    if (isMouseOverMass(mouseX, mouseY, p1x, p1y, state.m1 * 15)) {
+        isDragging = true;
+        draggedMass = 'mass1';
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+    }
+    // Check if mouse is over mass2
+    else if (isMouseOverMass(mouseX, mouseY, p2x, p2y, state.m2 * 15)) {
+        isDragging = true;
+        draggedMass = 'mass2';
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+    }
+});
 
 canvas.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-    cursorBlock.x = mouseX;
-    cursorBlock.y = mouseY;
+    
+    // Update cursor block position only when not in 'off' mode
+    if (cursorBlock.material !== 'off') {
+        cursorBlock.x = mouseX;
+        cursorBlock.y = mouseY;
+    }
+    
+    // If dragging, update the pendulum position
+    if (isDragging) {
+        handleDragPhysics();
+    }
 });
+
+canvas.addEventListener('mouseup', () => {
+    if (isDragging) {
+        isDragging = false;
+        draggedMass = null;
+    }
+});
+
+canvas.addEventListener('mouseleave', () => {
+    if (isDragging) {
+        isDragging = false;
+        draggedMass = null;
+    }
+});
+
+document.getElementById('cursorOff').addEventListener('click', () => setCursorMode('off'));
+document.getElementById('cursorConcrete').addEventListener('click', () => setCursorMode('concrete'));
+document.getElementById('cursorRubber').addEventListener('click', () => setCursorMode('rubber'));
 
 initSliders();
 document.getElementById("reset").addEventListener('click', resetPendulum);
