@@ -10,17 +10,21 @@ body {
     color: #cad5db;
     overflow: hidden;
     font-weight: 400;
+    height: 100vh;
+    width: 100vw;
 }
 
 .ui-container {
     position: absolute;
     top: 0;
     left: 0;
-    bottom: 0;
+    height: 100vh;
     z-index: 100;
     display: flex;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     padding: 1.5rem;
+    pointer-events: none;
 }
 
 .ui {
@@ -34,20 +38,27 @@ body {
     width: 100%;
     overflow: hidden;
     transition: all 0.3s ease;
+    max-height: calc(100vh - 3rem);
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
 }
 
 .ui.collapsed {
-    max-height: 80px;
+    max-height: 100px;
+    min-height: 80px;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid rgba(187, 184, 187, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
+    min-height: 60px;
 }
 
 .header:hover {
@@ -56,21 +67,55 @@ body {
 
 .header-content {
     flex: 1;
+    min-width: 0;
 }
 
 h1 {
     font-weight: 600;
     color: #e5cab7;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin: 0 0 0.25rem 0;
     letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.header-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.1rem;
+}
+
+.energy-display {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(155, 176, 205, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(155, 176, 205, 0.2);
+    font-size: 0.75rem;
+}
+
+.energy-label {
+    color: #9bb0cd;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.energy-value {
+    color: #e5cab7;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
 
 .expand-text {
     color: #9bb0cd;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
     opacity: 0.8;
+    line-height: 1.2;
 }
 
 .collapse-btn {
@@ -78,14 +123,16 @@ h1 {
     border: 1px solid rgba(229, 202, 183, 0.2);
     border-radius: 8px;
     color: #e5cab7;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-left: 1rem;
+    margin-left: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
 }
 
 .collapse-btn:hover {
@@ -95,6 +142,8 @@ h1 {
 
 .collapse-btn svg {
     transition: transform 0.3s ease;
+    width: 14px;
+    height: 14px;
 }
 
 .collapse-btn.rotated svg {
@@ -104,6 +153,9 @@ h1 {
 .content {
     padding: 1.5rem;
     transition: all 0.3s ease;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
 }
 
 .ui.collapsed .content {
@@ -123,6 +175,93 @@ h1 {
     margin: 0 0 0.75rem 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+.toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(187, 184, 187, 0.2);
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #cad5db;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #dcb8b0;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+    background-color: #120F19;
+}
+
+.damping-controls {
+    margin-top: 0.5rem;
+    padding: 1rem;
+    background: rgba(155, 176, 205, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(155, 176, 205, 0.1);
+    animation: fadeIn 0.3s ease;
+}
+
+.energy-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(155, 176, 205, 0.1);
+}
+
+.energy-display-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.energy-description {
+    color: #9bb0cd;
+    font-size: 0.75rem;
+    font-style: italic;
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .control-item {
@@ -192,6 +331,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(187, 184, 187, 0.1);
+    flex-shrink: 0;
 }
 
 .reset-btn {
@@ -224,9 +364,29 @@ canvas {
     display: block;
     width: 100vw;
     height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* Responsive design */
+.content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: rgba(187, 184, 187, 0.1);
+    border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: rgba(229, 202, 183, 0.3);
+    border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background: rgba(229, 202, 183, 0.5);
+}
+
 @media (max-width: 768px) {
     .ui-container {
         padding: 1rem;
@@ -234,10 +394,15 @@ canvas {
     
     .ui {
         max-width: 350px;
+        max-height: calc(100vh - 2rem);
+    }
+    
+    .ui.collapsed {
+        max-height: 90px;
     }
     
     .header {
-        padding: 1.25rem;
+        padding: 0.75rem 1.25rem;
     }
     
     .content {
@@ -248,6 +413,12 @@ canvas {
         font-size: 1.3rem;
     }
     
+    .header-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
     .control-groups {
         gap: 1rem;
     }
@@ -256,10 +427,15 @@ canvas {
 @media (max-width: 480px) {
     .ui {
         max-width: 300px;
+        max-height: calc(100vh - 1rem);
+    }
+    
+    .ui.collapsed {
+        max-height: 85px;
     }
     
     .header {
-        padding: 1rem;
+        padding: 0.6rem 1rem;
     }
     
     .content {
@@ -268,6 +444,22 @@ canvas {
     
     h1 {
         font-size: 1.2rem;
+        margin-bottom: 0.15rem;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+    }
+    
+    .energy-display {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .energy-label, .energy-value {
+        font-size: 0.7rem;
     }
     
     .control-item {
@@ -275,6 +467,60 @@ canvas {
     }
     
     .expand-text {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
+    }
+    
+    .damping-controls {
+        padding: 0.75rem;
+    }
+    
+    .ui-container {
+        padding: 0.5rem;
+    }
+    
+    .collapse-btn {
+        width: 26px;
+        height: 26px;
+        margin-left: 0.5rem;
+    }
+    
+    .collapse-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+@media (max-height: 600px) {
+    .ui {
+        max-height: calc(100vh - 1rem);
+    }
+    
+    .ui.collapsed {
+        max-height: 75px;
+    }
+    
+    .header {
+        padding: 0.5rem 1rem;
+    }
+    
+    .content {
+        padding: 1rem;
+    }
+    
+    .control-groups {
+        gap: 1rem;
+    }
+    
+    .control-item {
+        margin-bottom: 0.75rem;
+    }
+    
+    h1 {
+        font-size: 1.1rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .energy-display {
+        padding: 0.15rem 0.4rem;
     }
 }

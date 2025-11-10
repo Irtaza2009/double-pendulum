@@ -14,17 +14,52 @@ let state = {
     a1: Math.PI / 2,
     a2: Math.PI / 2,
     a1_v: 0,
-    a2_v: 0
+    a2_v: 0,
+    damping: 0.0,
+    dampingEnabled: false
 };
 
 const scale = 200;
 const trailPoints = [];
 const maxTrailLength = 150;
 
-function updatePhysics(dt) {
+// Energy display elements
+const energyValue = document.getElementById('energyValue');
+const energyValueInline = document.getElementById('energyValueInline');
+const headerStats = document.getElementById('headerStats');
+const dampingControls = document.getElementById('dampingControls');
+const dampingToggle = document.getElementById('dampingToggle');
+
+function calculateEnergy() {
     const { g, l1, l2, m1, m2, a1, a2, a1_v, a2_v } = state;
     
-    // Update angles based on the double pendulum equations of motion
+    // Calculate heights (y positions relative to origin)
+    const y1 = -l1 * Math.cos(a1); 
+    const y2 = y1 - l2 * Math.cos(a2);
+    
+    // Potential Energy (PE = m*g*h)
+    const pe1 = m1 * g * (l1 + y1); // l1 is added so PE is zero at bottom
+    const pe2 = m2 * g * (l1 + l2 + y2);
+    const totalPE = pe1 + pe2;
+    
+    // Kinetic Energy (KE = 0.5*m*v^2)
+    // Velocities in cartesian coordinates (I don't think I completely understand this part)
+    const v1x = l1 * a1_v * Math.cos(a1);
+    const v1y = l1 * a1_v * Math.sin(a1);
+    const v2x = v1x + l2 * a2_v * Math.cos(a2);
+    const v2y = v1y + l2 * a2_v * Math.sin(a2);
+    
+    const ke1 = 0.5 * m1 * (v1x * v1x + v1y * v1y);
+    const ke2 = 0.5 * m2 * (v2x * v2x + v2y * v2y);
+    const totalKE = ke1 + ke2;
+    
+    // Total mechanical energy
+    return totalKE + totalPE;
+}
+
+function updatePhysics(dt) {
+    const { g, l1, l2, m1, m2, a1, a2, a1_v, a2_v, damping, dampingEnabled } = state;
+    
     const num1 = -g * (2 * m1 + m2) * Math.sin(a1);
     const num2 = -m2 * g * Math.sin(a1 - 2 * a2);
     const num3 = -2 * Math.sin(a1 - a2) * m2 * (a2_v * a2_v * l2 + a1_v * a1_v * l1 * Math.cos(a1 - a2));
@@ -37,9 +72,18 @@ function updatePhysics(dt) {
     const den2 = l2 * (2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2));
     const a2_a = num4 / den2;
 
+    // Apply damping only if enabled
+    let damped_a1_a = a1_a;
+    let damped_a2_a = a2_a;
+    
+    if (dampingEnabled && damping > 0) {
+        damped_a1_a = a1_a - damping * a1_v;
+        damped_a2_a = a2_a - damping * a2_v;
+    }
+
     // Update velocities and positions
-    state.a1_v += a1_a * dt;
-    state.a2_v += a2_a * dt;
+    state.a1_v += damped_a1_a * dt;
+    state.a2_v += damped_a2_a * dt;
 
     state.a1 += state.a1_v * dt;
     state.a2 += state.a2_v * dt;
@@ -121,16 +165,25 @@ function drawPendulum() {
 function loop() {
     updatePhysics(0.016);
     drawPendulum();
+    
+    // Update energy display only if damping is enabled
+    if (state.dampingEnabled) {
+        const energy = calculateEnergy();
+        energyValue.textContent = `${energy.toFixed(2)} J`;
+        energyValueInline.textContent = `${energy.toFixed(2)} J`;
+    }
+    
     requestAnimationFrame(loop);
 }
 
-// --- UI ---
+// UI 
 const sliders = {
     g: document.getElementById("gravity"),
     l1: document.getElementById("l1"),
     l2: document.getElementById("l2"),
     m1: document.getElementById("m1"),
     m2: document.getElementById("m2"),
+    damping: document.getElementById("damping")
 };
 
 const vals = {
@@ -139,13 +192,15 @@ const vals = {
     l2: document.getElementById("l2Val"),
     m1: document.getElementById("m1Val"),
     m2: document.getElementById("m2Val"),
+    damping: document.getElementById("dampingVal")
 };
 
-// Helper: format value for display
+// format value for display
 function formatValue(key, value) {
     if (key === 'g') return parseFloat(value).toFixed(2);
     if (key === 'l1' || key === 'l2') return parseFloat(value).toFixed(2);
     if (key === 'm1' || key === 'm2') return parseFloat(value).toFixed(1);
+    if (key === 'damping') return parseFloat(value).toFixed(3);
     return value;
 }
 
@@ -193,7 +248,23 @@ for (let key in sliders) {
     });
 }
 
-// Initialize and start
+// Damping toggle functionality
+dampingToggle.addEventListener('change', (e) => {
+    state.dampingEnabled = e.target.checked;
+    
+    if (state.dampingEnabled) {
+        dampingControls.style.display = 'block';
+        headerStats.style.display = 'flex';
+    } else {
+        dampingControls.style.display = 'none';
+        headerStats.style.display = 'none';
+        // Reset damping to 0 when disabled
+        state.damping = 0;
+        sliders.damping.value = 0;
+        vals.damping.textContent = '0.000';
+    }
+});
+
 initSliders();
 document.getElementById("reset").addEventListener('click', resetPendulum);
 
@@ -202,14 +273,10 @@ window.addEventListener("resize", () => {
     canvas.height = window.innerHeight;
 });
 
-// Start the animation loop
-loop();
-
 // Collapsible UI functionality
 const collapseBtn = document.getElementById('collapseBtn');
 const ui = document.querySelector('.ui');
 const header = document.querySelector('.header');
-const content = document.getElementById('content');
 
 function toggleCollapse() {
     ui.classList.toggle('collapsed');
@@ -224,7 +291,6 @@ function toggleCollapse() {
     }
 }
 
-// Add click event to both the button and header
 collapseBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleCollapse();
@@ -234,5 +300,7 @@ header.addEventListener('click', () => {
     toggleCollapse();
 });
 
-// Initialize the UI as expanded by default
+// ui expanded by default
 ui.classList.remove('collapsed');
+
+loop();

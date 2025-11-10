@@ -13,6 +13,12 @@
             <div class="header">
                 <div class="header-content">
                     <h1>Double Pendulum</h1>
+                    <div class="header-stats" id="headerStats" style="display: none;">
+                        <div class="energy-display">
+                            <span class="energy-label">Energy:</span>
+                            <span class="energy-value" id="energyValue">0.00 J</span>
+                        </div>
+                    </div>
                     <div class="expand-text">Settings (click to expand)</div>
                 </div>
                 <button class="collapse-btn" id="collapseBtn">
@@ -68,6 +74,34 @@
                                 <span class="value" id="m2Val">1.0</span>
                             </label>
                             <input type="range" id="m2" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="toggle-header">
+                            <h3>Damping</h3>
+                            <label class="toggle">
+                                <input type="checkbox" id="dampingToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="damping-controls" id="dampingControls" style="display: none;">
+                            <div class="control-item">
+                                <label>
+                                    <span class="label-text">Air Resistance</span>
+                                    <span class="value" id="dampingVal">0.00</span>
+                                </label>
+                                <input type="range" id="damping" min="0" max="0.1" step="0.001" value="0">
+                            </div>
+                            <div class="energy-info">
+                                <div class="energy-display-inline">
+                                    <span class="energy-label">System Energy:</span>
+                                    <span class="energy-value" id="energyValueInline">0.00 J</span>
+                                </div>
+                                <div class="energy-description">
+                                    Energy decreases due to air resistance
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
