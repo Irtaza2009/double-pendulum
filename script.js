@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// pendulum state
+// Pendulum state
 let state = {
     g: 9.8,
     l1: 1,
@@ -24,7 +24,7 @@ const maxTrailLength = 150;
 function updatePhysics(dt) {
     const { g, l1, l2, m1, m2, a1, a2, a1_v, a2_v } = state;
     
-    // update angles based on the double pendulum equations of motion
+    // Update angles based on the double pendulum equations of motion
     const num1 = -g * (2 * m1 + m2) * Math.sin(a1);
     const num2 = -m2 * g * Math.sin(a1 - 2 * a2);
     const num3 = -2 * Math.sin(a1 - a2) * m2 * (a2_v * a2_v * l2 + a1_v * a1_v * l1 * Math.cos(a1 - a2));
@@ -37,7 +37,7 @@ function updatePhysics(dt) {
     const den2 = l2 * (2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2));
     const a2_a = num4 / den2;
 
-    // update velocities and positions
+    // Update velocities and positions
     state.a1_v += a1_a * dt;
     state.a2_v += a2_a * dt;
 
@@ -55,25 +55,25 @@ function getColorIntensity(mass, baseColor) {
 }
 
 function drawPendulum() {
-    // clear canvas
+    // Clear canvas
     ctx.fillStyle = '#120F19';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // origin
-    const originX = canvas.width / 2;
+    // Origin
+    const originX = canvas.width / 1.75;
     const originY = canvas.height / 3;
 
-    // positions using current rod lengths
+    // Positions using current rod lengths
     const p1x = originX + (state.l1 * scale) * Math.sin(state.a1);
     const p1y = originY + (state.l1 * scale) * Math.cos(state.a1);
     const p2x = p1x + (state.l2 * scale) * Math.sin(state.a2);
     const p2y = p1y + (state.l2 * scale) * Math.cos(state.a2);
 
-    // update trail
+    // Update trail
     trailPoints.push({ x: p2x, y: p2y });
     if (trailPoints.length > maxTrailLength) trailPoints.shift();
 
-    // draw trail
+    // Draw trail
     for (let i = 1; i < trailPoints.length; i++) {
         const alpha = (i / trailPoints.length) * 0.6;
         ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
@@ -84,7 +84,7 @@ function drawPendulum() {
         ctx.stroke();
     }
 
-    // rods
+    // Draw rods
     ctx.lineCap = 'round';
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#bbb8bb';
@@ -95,7 +95,7 @@ function drawPendulum() {
     ctx.lineTo(p2x, p2y);
     ctx.stroke();
 
-    // draw masses with shadow
+    // Draw masses with shadow
     ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
     ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 2;
@@ -111,7 +111,7 @@ function drawPendulum() {
     ctx.arc(p2x, p2y, state.m2 * 15, 0, Math.PI * 2);
     ctx.fill();
 
-    // reset shadow
+    // Reset shadow
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
     ctx.shadowOffsetX = 0;
@@ -124,7 +124,7 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-// UI
+// --- UI ---
 const sliders = {
     g: document.getElementById("gravity"),
     l1: document.getElementById("l1"),
@@ -141,7 +141,7 @@ const vals = {
     m2: document.getElementById("m2Val"),
 };
 
-// format value for display
+// Helper: format value for display
 function formatValue(key, value) {
     if (key === 'g') return parseFloat(value).toFixed(2);
     if (key === 'l1' || key === 'l2') return parseFloat(value).toFixed(2);
@@ -149,7 +149,7 @@ function formatValue(key, value) {
     return value;
 }
 
-
+// Initialize slider values and labels
 function initSliders() {
     for (let key in sliders) {
         if (!sliders[key]) continue;
@@ -168,6 +168,7 @@ function resetPendulum() {
     trailPoints.length = 0;
 }
 
+// Add event listeners to all sliders
 for (let key in sliders) {
     if (!sliders[key]) continue;
     
@@ -179,20 +180,20 @@ for (let key in sliders) {
             vals[key].textContent = formatValue(key, value);
         }
 
-        // reset physics when changing parameters
+        // Reset physics when changing parameters
         if (key === 'l1' || key === 'l2' || key === 'm1' || key === 'm2') {
             state.a1_v = 0;
             state.a2_v = 0;
         }
 
-        // clear trail when rod length changes
+        // Clear trail when rod length changes
         if (key === 'l1' || key === 'l2') {
             trailPoints.length = 0;
         }
     });
 }
 
-
+// Initialize and start
 initSliders();
 document.getElementById("reset").addEventListener('click', resetPendulum);
 
@@ -201,4 +202,37 @@ window.addEventListener("resize", () => {
     canvas.height = window.innerHeight;
 });
 
+// Start the animation loop
 loop();
+
+// Collapsible UI functionality
+const collapseBtn = document.getElementById('collapseBtn');
+const ui = document.querySelector('.ui');
+const header = document.querySelector('.header');
+const content = document.getElementById('content');
+
+function toggleCollapse() {
+    ui.classList.toggle('collapsed');
+    collapseBtn.classList.toggle('rotated');
+    
+    // Update the expand text based on state
+    const expandText = document.querySelector('.expand-text');
+    if (ui.classList.contains('collapsed')) {
+        expandText.textContent = 'Settings (click to expand)';
+    } else {
+        expandText.textContent = 'Settings (click to collapse)';
+    }
+}
+
+// Add click event to both the button and header
+collapseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleCollapse();
+});
+
+header.addEventListener('click', () => {
+    toggleCollapse();
+});
+
+// Initialize the UI as expanded by default
+ui.classList.remove('collapsed');

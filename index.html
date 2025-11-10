@@ -5,26 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Double Pendulum</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="ui">
-        <h1>Double Pendulum</h1>
-        <div class="controls">
-            <label>Gravity: <span id="gVal">9.8</span></label>
-            <input type="range" id="gravity" min="0" max="20" step="0.1" value="9.8">
-            <label>Rod 1 Length: <span id="l1Val">1</span></label>
-            <input type="range" id="l1" min="0.5" max="2" step="0.01" value="1">
+    <div class="ui-container">
+        <div class="ui">
+            <div class="header">
+                <div class="header-content">
+                    <h1>Double Pendulum</h1>
+                    <div class="expand-text">Settings (click to expand)</div>
+                </div>
+                <button class="collapse-btn" id="collapseBtn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4 6l4 4 4-4"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="content" id="content">
+                <div class="control-groups">
+                    <div class="control-group">
+                        <h3>Environment</h3>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Gravity</span>
+                                <span class="value" id="gVal">9.80</span>
+                            </label>
+                            <input type="range" id="gravity" min="0" max="20" step="0.1" value="9.8">
+                        </div>
+                    </div>
 
-            <label>Rod 2 Length: <span id="l2Val">1</span></label>
-            <input type="range" id="l2" min="0.5" max="2" step="0.01" value="1">
+                    <div class="control-group">
+                        <h3>Rod Lengths</h3>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Rod 1</span>
+                                <span class="value" id="l1Val">1.00</span>
+                            </label>
+                            <input type="range" id="l1" min="0.5" max="2" step="0.01" value="1">
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Rod 2</span>
+                                <span class="value" id="l2Val">1.00</span>
+                            </label>
+                            <input type="range" id="l2" min="0.5" max="2" step="0.01" value="1">
+                        </div>
+                    </div>
 
-            <label>Mass 1: <span id="m1Val">1</span></label>
-            <input type="range" id="m1" min="0.5" max="2" step="0.1" value="1">
+                    <div class="control-group">
+                        <h3>Masses</h3>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Mass 1</span>
+                                <span class="value" id="m1Val">1.0</span>
+                            </label>
+                            <input type="range" id="m1" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <span class="label-text">Mass 2</span>
+                                <span class="value" id="m2Val">1.0</span>
+                            </label>
+                            <input type="range" id="m2" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                    </div>
+                </div>
 
-            <label>Mass 2: <span id="m2Val">1</span></label>
-            <input type="range" id="m2" min="0.5" max="2" step="0.1" value="1">
-
-            <button id="reset">Reset</button>
+                <div class="actions">
+                    <button id="reset" class="reset-btn">
+                        <span>Reset Simulation</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <canvas id="canvas"></canvas>
