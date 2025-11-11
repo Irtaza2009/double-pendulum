@@ -4,9 +4,11 @@ A realistic simulation of a double pendulum with fun interactive features!
 
 Made for **[Accelerate](http://accelerate.hackclub.com/)**, a YSWS hosted by **[Hack Club](https://hackclub.com/)**!
 
-**Try it out:** [Live Demo](http://irtaza.xyz/double-pendulum)!
+## Try it out!
+**Live at**: http://irtaza.xyz/double-pendulum!
 
-![Double Pendulum Demo](https://hc-cdn.hel1.your-objectstorage.com/s/v3/0f5263fa7d81bbc41a4df68616115559eaa67794_chrome_zazirdmny2.mp4) 
+### Demo
+[<img src="https://github.com/user-attachments/assets/ac2a112b-729b-46e6-8f5d-0b88ff8dc23e" alt="Double Pendulum Demo" width="800" />](https://github.com/user-attachments/assets/7bcc330f-a649-4c18-92e5-c4652e4703bd)
 
 ## Features
 - **Cursor Blocks**: Turn your *cursor* into a **concrete** or **rubber** block, and *interact with the pendulum*!
